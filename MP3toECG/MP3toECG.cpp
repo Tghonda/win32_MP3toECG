@@ -13,7 +13,7 @@ namespace ECGConverter {
 		_tprintf(_T("USAGE:\n %s inputFile [options]\n"), exepath);
 		_tprintf(_T("\toptions:\n"));
 		_tprintf(_T("\t-v (verbose mode on)\n"));
-		_tprintf(_T("\t-o output-filename\n"));
+		_tprintf(_T("\t-c ignore calibration ERROR\n"));
 		_tprintf(_T("\t-s serialNo (over write serial No)\n"));
 		_tprintf(_T("\t-d startTime (convert only data section)\n"));
 	}

@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="Document.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -47,5 +48,13 @@
     <ClCompile Include="Convert2ECG.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Debug\ffmpeg.exe" />
+    <None Include="..\Debug\GFactorTable441.dat" />
+    <None Include="..\Debug\GFactorTable480.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="NG_C.mp3" />
   </ItemGroup>
 </Project>

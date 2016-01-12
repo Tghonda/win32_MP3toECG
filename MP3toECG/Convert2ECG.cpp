@@ -389,7 +389,7 @@ int Convert2ECG::convetECGData(void)
 			return err;
 		}
 		err = analyzeSerialNo();
-		if (err != ERR_OK) {
+		if (err != ERR_OK && optSerialNo == 0) {
 			std::cerr << "Error! canot detect the serial_NO part.\n";
 			return err;
 		}
