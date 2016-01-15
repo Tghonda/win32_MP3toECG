@@ -85,7 +85,7 @@ int Arguments::parseArgs(int argc, _TCHAR* argv[])
 				if (idx >= argc)
 					return -1;
 				toStdString(argv[idx], cstr, sizeof(cstr));
-				outputFname = std::string(cstr);
+				ecgFname = std::string(cstr);
 				break;
 			case 's':					// over write Serial NO.
 				idx++;
@@ -102,42 +102,48 @@ int Arguments::parseArgs(int argc, _TCHAR* argv[])
 			}
 		}
 		else {
-			if (inputMp3Fname.length() > 0)
+			if (mp3Fname.length() > 0)
 				return -1;					// dupricated input file.
 			toStdString(argv[idx], cstr, sizeof(cstr));
-			inputMp3Fname = std::string(cstr);
+			mp3Fname = std::string(cstr);
 		}
 	}
 
 	// check input MP3 file.
-	if (inputMp3Fname.empty()) {
+	if (mp3Fname.empty()) {
 		std::cerr << "Error! Not found input file(mp3).\n";
 		return -1;					// not found input file.
 	}
+	int npos = mp3Fname.find(EXT_MP3FILE, sizeof(EXT_MP3FILE));
+	int nlen = mp3Fname.length() - (sizeof(EXT_MP3FILE) -1);
+	if (npos != nlen)
+		mp3Fname.append(EXT_MP3FILE);
 	
 	// set intpu WAV file.
-	if (inputWavFname.empty()) {
-		inputWavFname = inputMp3Fname.substr(0);
-		int pposi = inputWavFname.find_last_of('.');
+	if (wavFname.empty()) {
+		int dpos = mp3Fname.rfind('\\');
+		wavFname = mp3Fname.substr(dpos + 1);
+		int pposi = wavFname.find_last_of('.');
 		if (pposi > 0)
-			inputWavFname.replace(pposi, sizeof(EXT_WAVFILE), EXT_WAVFILE);
+			wavFname.replace(pposi, sizeof(EXT_WAVFILE), EXT_WAVFILE);
 		else
-			inputWavFname.append(EXT_WAVFILE);
+			wavFname.append(EXT_WAVFILE);
 	}
 
 	// set output file.
-	if (outputFname.empty()) {
-		outputFname = inputMp3Fname.substr(0);
-		int pposi = outputFname.find_last_of('.');
+	if (ecgFname.empty()) {
+		int dpos = mp3Fname.rfind('\\');
+		ecgFname = mp3Fname.substr(dpos + 1);
+		int pposi = ecgFname.find_last_of('.');
 		if (pposi > 0)
-			outputFname.replace(pposi, sizeof(EXT_ECGFILE), EXT_ECGFILE);
+			ecgFname.replace(pposi, sizeof(EXT_ECGFILE), EXT_ECGFILE);
 		else
-			outputFname.append(EXT_ECGFILE);
+			ecgFname.append(EXT_ECGFILE);
 	}
 
 	// set status file.
-	statusFname = outputFname.substr(0);
-	int pposi_stat = outputFname.find_last_of('.');
+	statusFname = ecgFname.substr(0);
+	int pposi_stat = ecgFname.find_last_of('.');
 	if (pposi_stat > 0)
 		statusFname.replace(pposi_stat, sizeof(EXT_STATUSFILE), EXT_STATUSFILE);
 	else
@@ -147,10 +153,9 @@ int Arguments::parseArgs(int argc, _TCHAR* argv[])
 		std::cout << "Convert Mp3 --> ECG. arguments...\n";
 		std::cout << "\tEXE Path:    " << currentPath<< "\n";
 		std::cout << "\tECG Path:    " << pathECGBase << "\n";
-		std::cout << "\tECG Folder:  " << outFolderName << "\n";
-		std::cout << "\tInput  Mp3 File: " << inputMp3Fname << "\n";
-		std::cout << "\tWork   Wav File: " << inputWavFname << "\n";
-		std::cout << "\tOutput Ecg File: " << outputFname << "\n";
+		std::cout << "\tInput  Mp3 File: " << mp3Fname << "\n";
+		std::cout << "\tWork   Wav File: " << wavFname << "\n";
+		std::cout << "\tOutput Ecg File: " << ecgFname << "\n";
 		std::cout << "\tOut Status File: " << statusFname << "\n";	}
 
 	return 0;
@@ -158,7 +163,6 @@ int Arguments::parseArgs(int argc, _TCHAR* argv[])
 
 int Arguments::parseConfigf(void)
 {
-//	const char *configPath = "MP3toECG.cfg";
 	std::string configPath = std::string(currentPath);
 	std::ifstream cfst;
 	std::string   str;
@@ -182,10 +186,12 @@ int Arguments::parseConfigf(void)
 			if (pathECGBase.at(pathECGBase.length()-1) != '\\')
 				pathECGBase.append( "\\" );
 		}
+#if 0
 		if (str.compare("OUTFOLDER") == 0) {
 			cfst >> outFolderName;
 			if (outFolderName.at(outFolderName.length()-1) != '\\')
 				outFolderName.append( "\\" );		}
+#endif
 	}
 
 	cfst.close();
@@ -195,8 +201,7 @@ int Arguments::parseConfigf(void)
 
 int Arguments::getMp3FilePath(char* fpath, size_t len)
 {
-	std::string path(pathECGBase.c_str(), pathECGBase.length());
-	path.append(inputMp3Fname);
+	std::string path(mp3Fname.c_str(), mp3Fname.length());
 	strcpy_s(fpath, len, path.c_str());
 	return 0;
 }
@@ -204,7 +209,7 @@ int Arguments::getMp3FilePath(char* fpath, size_t len)
 int Arguments::getWavFilePath(char* fpath, size_t len)
 {
 	std::string path(pathECGBase.c_str(), pathECGBase.length());
-	path.append(inputWavFname);
+	path.append(wavFname);
 	strcpy_s(fpath, len, path.c_str());
 	return 0;
 }
@@ -212,8 +217,7 @@ int Arguments::getWavFilePath(char* fpath, size_t len)
 int Arguments::getEcgFilePath(char *fpath, size_t len)
 {
 	std::string path(pathECGBase.c_str(), pathECGBase.length());
-	path.append(outFolderName);
-	path.append(outputFname);
+	path.append(ecgFname);
 	strcpy_s(fpath, len, path.c_str());
 	return 0;
 }
@@ -221,7 +225,6 @@ int Arguments::getEcgFilePath(char *fpath, size_t len)
 int Arguments::getStatusPath(char *fpath, size_t len)
 {
 	std::string path(pathECGBase.c_str(), pathECGBase.length());
-	path.append(outFolderName);
 	path.append(statusFname);
 	strcpy_s(fpath, len, path.c_str());
 	return 0;
@@ -238,7 +241,7 @@ int Arguments::convertToWave(void)
 	cmd_ffmpeg.append(" -i ");
 	getMp3FilePath(path, sizeof(path));
 	cmd_ffmpeg.append(path);
-	cmd_ffmpeg.append(" -ar 48000 -y ");
+	cmd_ffmpeg.append(" -ac 1 -ar 48000 -y ");
 	getWavFilePath(path, sizeof(path));
 	cmd_ffmpeg.append(path);
 

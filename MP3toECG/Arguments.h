@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 
+#define EXT_MP3FILE ".mp3"
 #define EXT_WAVFILE ".wav"
 #define EXT_ECGFILE ".ecg"
 #define EXT_STATUSFILE ".rst"
@@ -12,10 +13,9 @@ class Arguments
 {
 private:
 	std::string	pathECGBase;
-	std::string	outFolderName;
-	std::string inputMp3Fname;
-	std::string inputWavFname;
-	std::string outputFname;
+	std::string mp3Fname;
+	std::string wavFname;
+	std::string ecgFname;
 	std::string statusFname;
 
 	char ecgFPath[_MAX_PATH];			// default folder path.

@@ -10,7 +10,7 @@
 namespace ECGConverter {
 	void usage( _TCHAR* exepath )
 	{
-		_tprintf(_T("usage  MP3toECG.exe (Rev. 0.90)\n\n"));
+		_tprintf(_T("usage  MP3toECG.exe (Rev. 0.91)\n\n"));
 		_tprintf(_T("%s inputFile [options]\n"), exepath);
 		_tprintf(_T("\toptions:\n"));
 		_tprintf(_T("\t-v (verbose mode on)\n"));
